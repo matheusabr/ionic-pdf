@@ -70,4 +70,27 @@ export class HomePage {
         this.document.viewDocument(url, 'application/pdf', {});
       });
   }
+
+  /**
+   * Open Downloaded Pdf (offline)
+   * 1. Get the dir path
+   * 2. Set options to Documents Viewer App
+   * 3. Open the downloaded pdf file
+   */
+  openDownloadedPdf(pdfFilename: string) {
+    let path = null;
+
+    if (this.platform.is('ios')) {
+      path = this.file.documentsDirectory;
+    } else {
+      path = this.file.dataDirectory;
+    }
+
+    const options: DocumentViewerOptions = {
+      title: 'PDF Title'
+    };
+
+    this.document.viewDocument(path + pdfFilename, 'application/pdf', options);
+  }
+
 }
