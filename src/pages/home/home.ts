@@ -9,6 +9,8 @@ import { FileTransfer } from '@ionic-native/file-transfer';
   templateUrl: 'home.html'
 })
 export class HomePage {
+  appPath: string;
+  dataPath: string;
 
   constructor(
     public navCtrl: NavController,
@@ -17,52 +19,55 @@ export class HomePage {
     private file: File,
     private transfer: FileTransfer
   ) {
+    
+  }
 
+  ionViewDidLoad() {
+    // Set paths
+    this.definePaths();
+  }
+
+  /**
+   * Define paths based on platform running
+   */
+  definePaths() {
+    if (this.platform.is('ios')) {
+      this.appPath = this.file.documentsDirectory;
+      this.dataPath = this.file.documentsDirectory;
+
+    } else {
+      this.appPath = this.file.applicationDirectory;
+      this.dataPath = this.file.dataDirectory;
+
+    }
   }
 
   /**
    * Open Local Pdf (offline)
-   * 1. Get the dir path
-   * 2. Set options to Documents Viewer App
-   * 3. Open the pdf file
+   * 1. Set options to Documents Viewer App
+   * 2. Open the pdf file
    */
   openLocalPdf() {
-    let path = null;
-
-    if (this.platform.is('ios')) {
-      path = this.file.documentsDirectory;
-    } else {
-      path = this.file.applicationDirectory;
-    }
-
     const options: DocumentViewerOptions = {
       title: 'PDF Title'
     };
 
-    this.document.viewDocument(path + 'www/assets/pdf/typescript_tutorial.pdf', 'application/pdf', options);
+    this.document.viewDocument(this.appPath + 'www/assets/pdf/typescript_tutorial.pdf', 'application/pdf', options);
   }
 
   /**
    * Download and Open Pdf (online)
-   * 1. Get the dir path
-   * 2. Create an instance of FileTransfer
-   * 3. Download the pdf file
-   * 3.1 Define where and the name of the file to save
-   * 4. Get promise response
-   * 4.1 Set internal url path
-   * 4.2 Open the pdf file
+   * 1. Create an instance of FileTransfer
+   * 2. Download the pdf file
+   * 2.1 Define where and the name of the file to save
+   * 3. Get promise response
+   * 3.1 Set internal url path
+   * 3.2 Open the pdf file
    */
   downloadAndOpenPdf() {
-    let path = null;
-
-    if (this.platform.is('ios')) {
-      path = this.file.documentsDirectory;
-    } else {
-      path = this.file.dataDirectory;
-    }
-
     const transfer = this.transfer.create();
-    transfer.download('https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf', path + 'myfile.pdf')
+
+    transfer.download('https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf', this.dataPath + 'myfile.pdf')
       .then(entry => {
         let url = entry.toURL();
         console.log(url);
@@ -73,24 +78,18 @@ export class HomePage {
 
   /**
    * Open Downloaded Pdf (offline)
-   * 1. Get the dir path
+   * 1. Get the filename
    * 2. Set options to Documents Viewer App
    * 3. Open the downloaded pdf file
+   * 
+   * @param pdfFilename: string
    */
   openDownloadedPdf(pdfFilename: string) {
-    let path = null;
-
-    if (this.platform.is('ios')) {
-      path = this.file.documentsDirectory;
-    } else {
-      path = this.file.dataDirectory;
-    }
-
     const options: DocumentViewerOptions = {
       title: 'PDF Title'
     };
 
-    this.document.viewDocument(path + pdfFilename, 'application/pdf', options);
+    this.document.viewDocument(this.dataPath + pdfFilename, 'application/pdf', options);
   }
 
 }
