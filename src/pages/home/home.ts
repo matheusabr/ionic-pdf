@@ -42,4 +42,32 @@ export class HomePage {
     this.document.viewDocument(path + 'www/assets/pdf/typescript_tutorial.pdf', 'application/pdf', options);
   }
 
+  /**
+   * Download and Open Pdf (online)
+   * 1. Get the dir path
+   * 2. Create an instance of FileTransfer
+   * 3. Download the pdf file
+   * 3.1 Define where and the name of the file to save
+   * 4. Get promise response
+   * 4.1 Set internal url path
+   * 4.2 Open the pdf file
+   */
+  downloadAndOpenPdf() {
+    let path = null;
+
+    if (this.platform.is('ios')) {
+      path = this.file.documentsDirectory;
+    } else {
+      path = this.file.dataDirectory;
+    }
+
+    const transfer = this.transfer.create();
+    transfer.download('https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf', path + 'myfile.pdf')
+      .then(entry => {
+        let url = entry.toURL();
+        console.log(url);
+        
+        this.document.viewDocument(url, 'application/pdf', {});
+      });
+  }
 }
